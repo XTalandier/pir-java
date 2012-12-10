@@ -39,23 +39,39 @@ public class Program implements Runnable{
 		portEnvoie = lePortEnvoit;
 		numProg    = numeroProgramme;
 		numProgAEnvoyer = numeroCopain;
+		
 	}
 	
 	public void recoitMessage(Message msg){
 		// Synchronise le lamport
 		lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
 		// Affiche le message recu
+		
 		System.out.println(numProg + " recoit : " + msg.getData());
+		
+		/*
 		if(!envoye){
 			envoyerAuxClients(numProg + "");
 			envoye = true;
+		}*/
+		
+		int Action = Maths.getAction();
+		
+		if (Action == 0){
+			//Action message
+			int numDestinataire = Maths.getRandom();
+			envoyerAUnClient(numDestinataire, msg.getData());
+		}
+		else {
+			// Diffuse message
+			envoyerAuxClients(numProg + "");
 		}
 	}
 
 	@Override
 	public void run() {
 		try {
-			// Client SVG
+			// Clients SVG
 			clientSVG = new Client(2999);
 			new Thread(clientSVG).start();
 			// Serveur
@@ -85,13 +101,20 @@ public class Program implements Runnable{
 	}
 	
 	public void envoyerAuxClients(String msg){
-		for(int i = 0 ; i < 4 ; i++){
+		for(int i = 0 ; i < ProjetIR.grandN ; i++){
 			if(lesClients[i] != null){
 				String toSVG = "REQ," + numProg + "," + (i + 1) + "," + lamport.getTime() + "," + (lamport.getTime() + 1);
 				clientSVG.envoyerMessage(new Message( toSVG  , 0), new Horloge());
 				lamport.tick();
 				lesClients[i].envoyerMessage(new Message(msg, lamport.getTime()), lamport);
 			}
+		}
+	}
+	
+	public void envoyerAUnClient(int idClient, String msg){
+		lamport.tick();
+		if(lesClients[idClient]!=null){
+			lesClients[idClient].envoyerMessage(new Message(msg, lamport.getTime()), lamport);
 		}
 	}
 }

@@ -12,7 +12,8 @@ import common.Maths;
  * @author Xavier TALANDIER <xavier@talandier.fr>
  */
 public class ProjetIR {
-
+	
+	public static int grandN = 4;
 	public static int portStart = 3000;
 	/**
 	 * @param args the command line arguments
@@ -22,7 +23,7 @@ public class ProjetIR {
 		new Thread(new ServeurSVG(0 , 2999 , 2999 , 0)).start();
 		
 		// Création des instances
-		int maxInstance = 4;
+		int maxInstance = grandN;
 		for(int i = 1 ; i <= maxInstance ; i++){
 			int portEmission  = getPortEmission(i, maxInstance);
 			int portReception = getPortReception(i, maxInstance);
