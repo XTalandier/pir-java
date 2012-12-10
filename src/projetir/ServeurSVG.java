@@ -17,9 +17,16 @@ import java.util.logging.Logger;
  * @author Cyril
  */
 public class ServeurSVG extends Program implements Runnable{
-	private String header;
+	private String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+			"<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"500\" width=\"500\">\n" +
+				"<defs>\n" +
+					"<marker id=\"Triangle\" viewBox=\"0 0 40 40\" refX=\"16\" refY=\"16\"\n" +
+						"markerWidth=\"10\" markerHeight=\"10\" orient=\"auto\">\n" +
+						"<path d=\"M 0 0 L 16 16 L 0 32 L 40 16 Z\" />\n" +
+					"</marker>\n" +
+				"</defs>\n";
 	private String body;
-	private String footer;
+	private String footer = "\n</svg>";
 	private String fileName="c:\\output.svg";
 	/**
 	 * Date = 0 (x)
@@ -37,6 +44,9 @@ public class ServeurSVG extends Program implements Runnable{
 	
 	public ServeurSVG(int numProg, int portEcoute, int portEnvoi , int numCopain){
 		super(numProg, portEcoute, portEnvoi, numCopain);
+		for (int i = 1; i < 11; i++) {
+				dessinerProcessus(i, "Process #" + i);
+		}
 	}
 	
 	@Override

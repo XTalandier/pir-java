@@ -20,7 +20,7 @@ public class ProjetIR {
 		new Thread(new ServeurSVG(0 , 2999 , 2999 , 0)).start();
 		
 		// Création des instances
-		int maxInstance = 4;
+		int maxInstance = 2;
 		for(int i = 1 ; i <= maxInstance ; i++){
 			int portEmission  = getPortEmission(i, maxInstance);
 			int portReception = getPortReception(i, maxInstance);
