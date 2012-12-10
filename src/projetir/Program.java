@@ -29,7 +29,11 @@ public class Program implements Runnable{
 	Client clientSVG;
 	// Jalon 12: mon numero initialisé à -1
 	public int monNumero = -1;
-	
+	// Jalon 13: Nombre d'instances
+	public int nbInstances = 0;
+	// Jalon 13: Tableau de clients
+	public Client[] lesClients;
+	public boolean envoye = false;
 	public Program(int numeroProgramme , int lePortEcoute , int lePortEnvoit , int numeroCopain){
 		portEcoute = lePortEcoute;
 		portEnvoie = lePortEnvoit;
@@ -40,36 +44,12 @@ public class Program implements Runnable{
 	public void recoitMessage(Message msg){
 		// Synchronise le lamport
 		lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
-		// Genere un numero si pas encore tiré
-		String delims = "[,]";
-		String[] tokens = msg.getData().split(delims);
-		int idMachine   = Integer.parseInt(tokens[0]);
-		String numElection = tokens[1];
-		// Si gagnant, fait passer le message
-		if(numElection.equals("win")){
-			client.envoyerMessage(new Message(msg.getData(), lamport.getTime()), lamport);
-		// Envoie qu'il a gagné
-		}else if(idMachine == numProg){
-			client.envoyerMessage(new Message(numProg + ",win", lamport.getTime()), lamport);
-		}else{
-			monNumero = Maths.getRandom();
-			if(monNumero > Integer.parseInt(numElection)){
-				client.envoyerMessage(new Message(numProg + "," + monNumero, lamport.getTime()), lamport);
-			}else{
-				client.envoyerMessage(new Message(msg.getData(), lamport.getTime()), lamport);
-			}
+		// Affiche le message recu
+		System.out.println(numProg + " recoit : " + msg.getData());
+		if(!envoye){
+			envoyerAuxClients(numProg + "");
+			envoye = true;
 		}
-		/*
-		if(msg.getEstampille() > 10){
-			clientSVG.envoyerMessage(new Message("EXIT", lamport.getTime()) , lamport);
-		}else {
-			clientSVG.envoyerMessage(new Message("REQ," + numProg + "," + numProgAEnvoyer + "," + lamport.getTime() + "," + (lamport.getTime() + 1), lamport.getTime()) , lamport);
-			// On prend le plus grand et on lui ajoute 1
-			// On étudie le message
-			System.out.println(numProg + ": recoitMessage : " + msg.getData());
-			client.envoyerMessage(new Message(msg.getData().equals("ping") ? "pong" : "ping" , lamport.getTime()), lamport);
-		}
-		*/
 	}
 
 	@Override
@@ -82,17 +62,36 @@ public class Program implements Runnable{
 			System.out.println("Je suis le #" + numProg);
 			leServeur = new Thread(new Server(portEcoute, this));
 			leServeur.start();
-			client = new Client(portEnvoie);
-			leClient = new Thread(client);
-			leClient.start();
+			// Clients
+			lesClients = new Client[nbInstances];
+			int nbFoo = 0;
+			for(int i = 1 ; i <= nbInstances ; i++){
+				if(i != numProg){
+					lesClients[i - 1] = new Client(3000 + i - 1);
+					new Thread(lesClients[i - 1]).start();
+				}
+			}
 			if(numProg == 1){
 				Thread.sleep(2000);
-				client.envoyerMessage(new Message(numProg + "," + Maths.getRandom() , lamport.getTime()) , lamport);
+				envoyerAuxClients(numProg + "");
+				Thread.sleep(1000);
+				clientSVG.envoyerMessage(new Message("EXIT", 0), lamport);
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(Program.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (InterruptedException ex) {
 				Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	public void envoyerAuxClients(String msg){
+		for(int i = 0 ; i < 4 ; i++){
+			if(lesClients[i] != null){
+				String toSVG = "REQ," + numProg + "," + (i + 1) + "," + lamport.getTime() + "," + (lamport.getTime() + 1);
+				clientSVG.envoyerMessage(new Message( toSVG  , 0), new Horloge());
+				lamport.tick();
+				lesClients[i].envoyerMessage(new Message(msg, lamport.getTime()), lamport);
+			}
 		}
 	}
 }
