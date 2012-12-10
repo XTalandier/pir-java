@@ -4,8 +4,15 @@
  */
 package sockets;
 
+import common.Message;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.CharBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sun.text.normalizer.UTF16;
 
 /**
  *
@@ -13,14 +20,31 @@ import java.nio.CharBuffer;
  */
 public class Client implements Runnable{
 	private int portEcoute; 
+	private Socket socket = null;
+	private PrintWriter out;
 	
 	public Client(int leportEcoute){
 		portEcoute = leportEcoute;
 	}
+	
+	public void envoyerMessage(String msg){
+		out.println(new Message(msg, 2));
+		out.flush();		
+	}
 			
 	@Override
 	public void run() {
-		
+		try {
+			Thread.sleep(1000);
+			System.out.println("Connect to " + portEcoute);
+			socket = new Socket("127.0.0.1", portEcoute);
+			out = new PrintWriter(socket.getOutputStream());
+		} catch (UnknownHostException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IOException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (InterruptedException ex) {
+				Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
-
 }
