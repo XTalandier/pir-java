@@ -35,12 +35,14 @@ public class Program implements Runnable{
 	// Jalon 13: Tableau de clients
 	public Client[] lesClients;
 	public boolean envoye = false;
-	
 	private FileDeRequetes fdr = new FileDeRequetes();
 	
 	// Jalon 17: Veut entrer en section critique
 	private boolean jeVeuxEtreEnCritique = false;
 
+	// Jalon 19: Nb de reply
+	private int nbReply = 0;
+	
 	public Program(int numeroProgramme , int lePortEcoute , int lePortEnvoit , int numeroCopain){
 		portEcoute = lePortEcoute;
 		portEnvoie = lePortEnvoit;
@@ -84,6 +86,8 @@ public class Program implements Runnable{
 					jeVeuxEtreEnCritique = true;
 					// Envoie du message REQUEST
 					envoyerAuxClients(numProg + ",REQUEST");
+					fdr.addRequest(new Message(numProg + ",REQUEST", lamport.getTime()));
+					nbReply = 0;
 				}else{
 					// Envoie d'un message normal
 					envoyerAuxClients(numProg + ",NORMAL");
@@ -100,6 +104,18 @@ public class Program implements Runnable{
 			// On envoie un REPLY à l'émétteur
 			if(commande.equals("REQUEST")){
 				envoyerAUnClient(idMachine , numProg + ",REPLY");
+			}else if(commande.equals("REPLY")){
+				nbReply++;
+				if(nbReply == ProjetIR.grandN){
+					// Il faut checker si la demande est dans la file
+					boolean estDansLaFile = true;
+					if(estDansLaFile){
+						envoyerAuxClients(numProg + ",RELEASE");
+						System.out.println(numProg + " sort de section critique");
+					}
+				}
+			}else{
+				// Message normal
 			}
 		}
 	}
