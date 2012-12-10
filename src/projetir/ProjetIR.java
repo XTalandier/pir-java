@@ -13,7 +13,7 @@ import common.Maths;
  */
 public class ProjetIR {
 	
-	public static int grandN = 4;
+	public static int grandN = 5;
 	public static int portStart = 3000;
 	/**
 	 * @param args the command line arguments

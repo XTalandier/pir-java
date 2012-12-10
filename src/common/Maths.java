@@ -11,13 +11,13 @@ import projetir.ProjetIR;
  * @author Xavier TALANDIER <xavier@talandier.fr>
  */
 public class Maths {
+	public static Random rand = new Random();
+	
 	public static int getRandom(){
-		Random rand = new Random();
 		return rand.nextInt(ProjetIR.grandN - 1) + 0;
 	}
 	
 	public static int getAction(){
-		Random rand = new Random();
 		return rand.nextInt(1) + 0;	
 	}
 }
