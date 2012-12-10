@@ -4,10 +4,12 @@
  */
 package projetir;
 
+import common.Horloge;
 import common.Message;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.omg.PortableInterceptor.HOLDING;
 import sockets.*;
 import sun.awt.windows.ThemeReader;
 /**
@@ -19,17 +21,24 @@ public class Program implements Runnable{
 	private int portEcoute;
 	private int portEnvoie;
 	private int numProg;
+	private int numProgAEnvoyer;
 	Thread leServeur;
 	Thread leClient;
 	Client client;
+	Horloge lamport = new Horloge();
+
 	public Program(int numeroProgramme , int lePortEcoute , int lePortEnvoit){
 		portEcoute = lePortEcoute;
 		portEnvoie = lePortEnvoit;
-		numProg = numeroProgramme;
+		numProg    = numeroProgramme;
 	}
 	
 	public void recoitMessage(Message msg){
-		System.out.println("recoitMessage : " + msg.getData());
+		// On prend le plus grand et on lui ajoute 1
+		lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
+		// On étudie le message
+		System.out.println(numProg + ": recoitMessage : " + msg.getData());
+		client.envoyerMessage(new Message(msg.getData(), lamport.getTime()), lamport);
 	}
 
 	@Override
@@ -43,7 +52,7 @@ public class Program implements Runnable{
 			leClient.start();
 			if(numProg == 1){
 				Thread.sleep(2000);
-				client.envoyerMessage("Waza !!");
+				client.envoyerMessage(new Message("Hello world !" , lamport.getTime()) , lamport);
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(Program.class.getName()).log(Level.SEVERE, null, ex);

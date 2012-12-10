@@ -4,6 +4,7 @@
  */
 package sockets;
 
+import common.Horloge;
 import common.Message;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,8 +28,9 @@ public class Client implements Runnable{
 		portEcoute = leportEcoute;
 	}
 	
-	public void envoyerMessage(String msg){
-		out.println(new Message(msg, 2));
+	public void envoyerMessage(Message msg , Horloge timer){
+		timer.tick();
+		out.println(msg);
 		out.flush();		
 	}
 			
