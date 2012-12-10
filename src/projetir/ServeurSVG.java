@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import common.ColorSVG;
 import common.Message;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,8 +35,8 @@ public class ServeurSVG extends Program implements Runnable{
 	 */
 	private int interline = 40;
 	
-	public ServeurSVG(int numProg, int portEcoute, int portEnvoi){
-		super(numProg, portEcoute, portEnvoi);
+	public ServeurSVG(int numProg, int portEcoute, int portEnvoi , int numCopain){
+		super(numProg, portEcoute, portEnvoi, numCopain);
 	}
 	
 	@Override
@@ -46,7 +48,14 @@ public class ServeurSVG extends Program implements Runnable{
 		String delims = "[,]";
 		String[] tokens = msg.split(delims);
 		
-		if (tokens[0].equals("REAL")){
+		if (tokens[0].equals("EXIT")){
+			try {
+				close();
+			} catch (IOException ex) {
+				Logger.getLogger(ServeurSVG.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		else if (tokens[0].equals("REAL")){
 			dessinerREAL(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]));
 		}
 		else if(tokens[0].equals("REP")){

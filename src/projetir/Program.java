@@ -26,24 +26,34 @@ public class Program implements Runnable{
 	Thread leClient;
 	Client client;
 	Horloge lamport = new Horloge();
-
-	public Program(int numeroProgramme , int lePortEcoute , int lePortEnvoit){
+	Client clientSVG;
+	public Program(int numeroProgramme , int lePortEcoute , int lePortEnvoit , int numeroCopain){
 		portEcoute = lePortEcoute;
 		portEnvoie = lePortEnvoit;
 		numProg    = numeroProgramme;
+		numProgAEnvoyer = numeroCopain;
 	}
 	
 	public void recoitMessage(Message msg){
-		// On prend le plus grand et on lui ajoute 1
-		lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
-		// On étudie le message
-		System.out.println(numProg + ": recoitMessage : " + msg.getData());
-		client.envoyerMessage(new Message(msg.getData(), lamport.getTime()), lamport);
+		if(msg.getEstampille() > 10){
+			clientSVG.envoyerMessage(new Message("EXIT", lamport.getTime()) , lamport);
+		}else {
+			clientSVG.envoyerMessage(new Message("REQ," + numProg + "," + numProgAEnvoyer + "," + lamport.getTime() + "," + lamport.getTime() + 1, lamport.getTime()) , lamport);
+			// On prend le plus grand et on lui ajoute 1
+			lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
+			// On étudie le message
+			System.out.println(numProg + ": recoitMessage : " + msg.getData());
+			client.envoyerMessage(new Message(msg.getData().equals("ping") ? "pong" : "ping" , lamport.getTime()), lamport);
+		}
 	}
 
 	@Override
 	public void run() {
 		try {
+			// Client SVG
+			clientSVG = new Client(2999);
+			new Thread(clientSVG).start();
+			// Serveur
 			System.out.println("Je suis le #" + numProg);
 			leServeur = new Thread(new Server(portEcoute, this));
 			leServeur.start();
@@ -52,7 +62,7 @@ public class Program implements Runnable{
 			leClient.start();
 			if(numProg == 1){
 				Thread.sleep(2000);
-				client.envoyerMessage(new Message("Hello world !" , lamport.getTime()) , lamport);
+				client.envoyerMessage(new Message("ping" , lamport.getTime()) , lamport);
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(Program.class.getName()).log(Level.SEVERE, null, ex);

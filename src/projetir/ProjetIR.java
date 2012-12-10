@@ -11,33 +11,40 @@ package projetir;
  */
 public class ProjetIR {
 
+	public static int portStart = 3000;
 	/**
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-		//int port1 = 3000;
-		//int port2 = 3001;
-		//Thread p1;
-		//Thread p2;
+		// Création du serveur SVG
+		new Thread(new ServeurSVG(0 , 2999 , 2999 , 0)).start();
+		
+		// Création des instances
 		int maxInstance = 4;
 		for(int i = 1 ; i <= maxInstance ; i++){
 			int portEmission  = getPortEmission(i, maxInstance);
 			int portReception = getPortReception(i, maxInstance);
-			new Thread(new Program(i , portReception , portEmission)).start();
+			int numCopain     = portEmission - portStart + 1;
+			new Thread(new Program(i , portReception , portEmission , numCopain)).start();
 		}
-		//p1 = new Thread(new Program(1 , port1 , port2));
-		//p2 = new Thread(new Program(2 , port2 , port1));
-		
-		//p1.start();
-		//p2.start();
 	}
 	
+	/**
+	 * Renvoie le numero du port pour envoyer
+	 * @param numero numero de l'instance
+	 * @param max Nombre max d'instance à créer
+	 * @return int
+	 */
 	public static int getPortEmission(int numero , int max){
-		int portStart = 3000;
 		return numero == max ? portStart : portStart + numero;
 	}
+	/**
+	 * Renvoie le numero du port à écouter
+	 * @param numero numero de l'instance
+	 * @param max Nombre max d'instance à créer
+	 * @return int
+	 */
 	public static int getPortReception(int numero , int max){
-		int portStart = 3000;
 		return (portStart + numero - 1) < 3000 ? portStart : portStart + numero - 1;
 	}
 }
