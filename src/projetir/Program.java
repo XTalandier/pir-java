@@ -43,6 +43,8 @@ public class Program implements Runnable{
 	}
 	
 	public void recoitMessage(Message msg){
+		diffuserMessageTelQuel(msg);
+		/*
 		// Synchronise le lamport
 		lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
 		// Affiche le message recu
@@ -117,6 +119,14 @@ public class Program implements Runnable{
 			String toSVG = "REQ," + numProg + "," + (idClient + 1) + "," + lamport.getTime() + "," + (lamport.getTime() + 1);
 			clientSVG.envoyerMessage(new Message( toSVG  , 0), new Horloge());
 			lesClients[idClient].envoyerMessage(new Message(msg, lamport.getTime()), lamport);
+		}
+	}
+	
+	public void diffuserMessageTelQuel(Message msg){
+		for(int i = 0 ; i < ProjetIR.grandN ; i++){
+			if(lesClients[i] != null){
+				lesClients[i].envoyerMessage(msg, new Horloge());
+			}
 		}
 	}
 }
