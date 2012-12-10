@@ -37,6 +37,10 @@ public class Program implements Runnable{
 	public boolean envoye = false;
 	
 	private FileDeRequetes fdr = new FileDeRequetes();
+	
+	// Jalon 17: Veut entrer en section critique
+	private boolean jeVeuxEtreEnCritique = false;
+
 	public Program(int numeroProgramme , int lePortEcoute , int lePortEnvoit , int numeroCopain){
 		portEcoute = lePortEcoute;
 		portEnvoie = lePortEnvoit;
@@ -46,10 +50,11 @@ public class Program implements Runnable{
 	}
 	
 	public void recoitMessage(Message msg){
+		// Traite simplement les messages
 		synchronized(this){
 			fdr.addRequest(msg);
 		}
-		diffuserMessageTelQuel(msg);
+		//diffuserMessageTelQuel(msg);
 		/*
 		// Synchronise le lamport
 		lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
@@ -63,16 +68,29 @@ public class Program implements Runnable{
 			envoye = true;
 		}*/
 		
-		int Action = Maths.getAction();
-		
-		if (Action == 0){
-			//Action message
-			int numDestinataire = Maths.getRandom();
-			envoyerAUnClient(numDestinataire, msg.getData());
-		}
-		else {
-			// Diffuse message
-			envoyerAuxClients(numProg + "");
+		int Action = Maths.getRandom() % 2;
+		// Si en section critique, ne rien faire
+		if(!jeVeuxEtreEnCritique){
+			if (Action == 0){
+				//Action message
+				int numDestinataire = Maths.getRandom();
+				envoyerAUnClient(numDestinataire, msg.getData());
+			}
+			else {
+				int choix = Maths.getRandom() % 2;
+				// Veut entrer en section critique
+				if(choix == 1){
+					System.out.println(numProg + " entre en section critique");
+					jeVeuxEtreEnCritique = true;
+					// Envoie du message REQUEST
+					envoyerAuxClients(numProg + ",REQUEST");
+				}else{
+					// Envoie d'un message normal
+					envoyerAuxClients(numProg + ",NORMAL");
+				}
+				// Diffuse message
+				//envoyerAuxClients(numProg + "");
+			}
 		}
 	}
 
