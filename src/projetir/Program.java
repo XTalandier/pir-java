@@ -34,12 +34,12 @@ public class Program implements Runnable{
 	}
 	
 	public void recoitMessage(Message msg){
+		lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
 		if(msg.getEstampille() > 10){
 			clientSVG.envoyerMessage(new Message("EXIT", lamport.getTime()) , lamport);
 		}else {
-			clientSVG.envoyerMessage(new Message("REQ," + numProg + "," + numProgAEnvoyer + "," + lamport.getTime() + "," + lamport.getTime() + 1, lamport.getTime()) , lamport);
+			clientSVG.envoyerMessage(new Message("REQ," + numProg + "," + numProgAEnvoyer + "," + lamport.getTime() + "," + (lamport.getTime() + 1), lamport.getTime()) , lamport);
 			// On prend le plus grand et on lui ajoute 1
-			lamport.synchronize(Math.max(msg.getEstampille(), lamport.getTime()) + 1);
 			// On étudie le message
 			System.out.println(numProg + ": recoitMessage : " + msg.getData());
 			client.envoyerMessage(new Message(msg.getData().equals("ping") ? "pong" : "ping" , lamport.getTime()), lamport);
