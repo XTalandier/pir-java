@@ -4,6 +4,7 @@
  */
 package projetir;
 
+import common.FileDeRequetes;
 import common.Horloge;
 import common.Maths;
 import common.Message;
@@ -34,6 +35,8 @@ public class Program implements Runnable{
 	// Jalon 13: Tableau de clients
 	public Client[] lesClients;
 	public boolean envoye = false;
+	
+	private FileDeRequetes fdr = new FileDeRequetes();
 	public Program(int numeroProgramme , int lePortEcoute , int lePortEnvoit , int numeroCopain){
 		portEcoute = lePortEcoute;
 		portEnvoie = lePortEnvoit;
@@ -43,6 +46,9 @@ public class Program implements Runnable{
 	}
 	
 	public void recoitMessage(Message msg){
+		synchronized(this){
+			fdr.addRequest(msg);
+		}
 		diffuserMessageTelQuel(msg);
 		/*
 		// Synchronise le lamport
