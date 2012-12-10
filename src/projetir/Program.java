@@ -91,6 +91,16 @@ public class Program implements Runnable{
 				// Diffuse message
 				//envoyerAuxClients(numProg + "");
 			}
+		}else{
+			// Traitement des messages
+			String delimiter = "[,]";
+			String[] tokens = msg.getData().split(delimiter);
+			int idMachine = Integer.parseInt(tokens[0]);
+			String commande = tokens[1];
+			// On envoie un REPLY à l'émétteur
+			if(commande.equals("REQUEST")){
+				envoyerAUnClient(idMachine , numProg + ",REPLY");
+			}
 		}
 	}
 
