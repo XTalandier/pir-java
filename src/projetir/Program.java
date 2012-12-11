@@ -165,7 +165,7 @@ public class Program implements Runnable{
 	
 	public void envoyerAUnClient(int idClient, String msg){
 		lamport.tick();
-		if(lesClients[idClient]!=null){
+		if(lesClients[idClient] != null){
 			String toSVG = "REQ," + numProg + "," + (idClient + 1) + "," + lamport.getTime() + "," + (lamport.getTime() + 1);
 			clientSVG.envoyerMessage(new Message( toSVG  , 0), new Horloge());
 			lesClients[idClient].envoyerMessage(new Message(msg, lamport.getTime()), lamport);

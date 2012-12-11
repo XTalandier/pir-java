@@ -23,7 +23,10 @@ public class FileDeRequetes {
 				@Override
 				public int compare(Message m1, Message m2){
 					int est = m1.getEstampille() - m2.getEstampille();
-					return est == 0 ? Integer.parseInt(m1.getData()) - Integer.parseInt(m2.getData()) : est;
+					String delimiter = "[,]";
+					String[] tokens1 = m1.getData().split(delimiter);
+					String[] tokens2 = m2.getData().split(delimiter);
+					return est == 0 ? Integer.parseInt(tokens1[0]) - Integer.parseInt(tokens2[0]) : est;
 				}
 			});
 		}
