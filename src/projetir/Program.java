@@ -39,7 +39,7 @@ public class Program implements Runnable{
 	
 	// Jalon 17: Veut entrer en section critique
 	private boolean jeVeuxEtreEnCritique = false;
-
+	private int heureCritique = 0;
 	// Jalon 19: Nb de reply
 	private int nbReply = 0;
 	
@@ -83,6 +83,7 @@ public class Program implements Runnable{
 				// Veut entrer en section critique
 				if(choix == 1){
 					System.out.println(numProg + " entre en section critique");
+					heureCritique = lamport.getTime();
 					jeVeuxEtreEnCritique = true;
 					// Envoie du message REQUEST
 					envoyerAuxClients(numProg + ",REQUEST");
@@ -107,12 +108,13 @@ public class Program implements Runnable{
 					envoyerAUnClient(idMachine , numProg + ",REPLY");
 				}else if(commande.equals("REPLY")){
 					nbReply++;
-					if(nbReply == ProjetIR.grandN){
+					if(nbReply == ProjetIR.grandN - 2){
 						// Il faut checker si la demande est dans la file
 						boolean estDansLaFile = true;
 						if(estDansLaFile){
 							envoyerAuxClients(numProg + ",RELEASE");
 							System.out.println(numProg + " sort de section critique");
+							clientSVG.envoyerMessage(new Message("SC," + numProg + "," + heureCritique + "," + lamport.getTime(), 0), lamport);
 						}
 					}
 				}else{

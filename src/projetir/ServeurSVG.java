@@ -166,7 +166,7 @@ public class ServeurSVG extends Program implements Runnable{
 		int startPosX = dateDeb * step;
 		int width     = dateFin * step - startPosX;
 		// 1 step is "step", so, start + dateDeb * step
-		tracerRectangle(start + startPosX , interline * num , width , step , ColorSVG.RED);
+		tracerRectangle(start + startPosX , interline * num , width , step , ColorSVG.BLUE);
 	}
 
 	/**
