@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class ServeurSVG extends Program implements Runnable{
 	private String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
-			"<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"500\" width=\"500\">\n" +
+			"<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"1600\" width=\"1600\">\n" +
 				"<defs>\n" +
 					"<marker id=\"Triangle\" viewBox=\"0 0 40 40\" refX=\"16\" refY=\"16\"\n" +
 						"markerWidth=\"10\" markerHeight=\"10\" orient=\"auto\">\n" +
@@ -35,7 +35,7 @@ public class ServeurSVG extends Program implements Runnable{
 	/**
 	 * Step between 2 dates
 	 */
-	private int step  = 10;
+	private int step  = 50;
 	
 	/**
 	 * Step between 2 process
@@ -151,8 +151,9 @@ public class ServeurSVG extends Program implements Runnable{
 	 */
 	public void dessinerProcessus(int num , String nom){
 		int curY = num * interline ;
+		int step2=10;
 		ecrireText(step , curY , nom , ColorSVG.BLACK);
-		tracerFleche(step, curY + step, 450 , curY + step, ColorSVG.BLACK);
+		tracerFleche(step, curY + step2, 1600 , curY + step2, ColorSVG.BLACK);
 	}
 	
 	/**

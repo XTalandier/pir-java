@@ -100,22 +100,24 @@ public class Program implements Runnable{
 			String delimiter = "[,]";
 			String[] tokens = msg.getData().split(delimiter);
 			int idMachine = Integer.parseInt(tokens[0]);
-			String commande = tokens[1];
-			// On envoie un REPLY à l'émétteur
-			if(commande.equals("REQUEST")){
-				envoyerAUnClient(idMachine , numProg + ",REPLY");
-			}else if(commande.equals("REPLY")){
-				nbReply++;
-				if(nbReply == ProjetIR.grandN){
-					// Il faut checker si la demande est dans la file
-					boolean estDansLaFile = true;
-					if(estDansLaFile){
-						envoyerAuxClients(numProg + ",RELEASE");
-						System.out.println(numProg + " sort de section critique");
+			if ( tokens.length > 1 ) {
+				String commande = tokens[1];
+				// On envoie un REPLY à l'émétteur
+				if(commande.equals("REQUEST")){
+					envoyerAUnClient(idMachine , numProg + ",REPLY");
+				}else if(commande.equals("REPLY")){
+					nbReply++;
+					if(nbReply == ProjetIR.grandN){
+						// Il faut checker si la demande est dans la file
+						boolean estDansLaFile = true;
+						if(estDansLaFile){
+							envoyerAuxClients(numProg + ",RELEASE");
+							System.out.println(numProg + " sort de section critique");
+						}
 					}
+				}else{
+					// Message normal
 				}
-			}else{
-				// Message normal
 			}
 		}
 	}
